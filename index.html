@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Financial Literacy Chatbot</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --primary: #4361ee;
+    --primary-dark: #3a0ca3;
+    --secondary: #f72585;
+    --secondary-dark: #b5179e;
+    --accent: #4cc9f0;
+    --background: #f8f9fa;
+    --surface: #ffffff;
+    --text: #212529;
+    --text-light: #6c757d;
+    --success: #06ffa5;
+    --error: #ff006e;
+    --warning: #ffbe0b;
+    --border: #e9ecef;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+    --message-bg: #f1f3f5;
+    --message-border: #dee2e6;
+    --scrollbar: rgba(0, 0, 0, 0.2);
+    --scrollbar-hover: rgba(0, 0, 0, 0.4);
+    --gradient-primary: linear-gradient(135deg, #4361ee, #3a0ca3);
+    --gradient-secondary: linear-gradient(135deg, #f72585, #b5179e);
+    --gradient-accent: linear-gradient(135deg, #4cc9f0, #4361ee);
+    --radius: 20px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  [data-theme="dark"] {
+    --background: #0f0f0f;
+    --surface: #1a1a1a;
+    --text: #f8f9fa;
+    --text-light: #adb5bd;
+    --message-bg: #2d2d2d;
+    --message-border: #404040;
+    --border: #404040;
+    --scrollbar: rgba(255, 255, 255, 0.2);
+    --scrollbar-hover: rgba(255, 255, 255, 0.4);
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.3);
+  }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    transition: var(--transition);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(79, 172, 254, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(247, 37, 133, 0.05) 0%, transparent 50%);
+  }
+  .app-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 0;
+    position: relative;
+  }
+  .header-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+  }
+  .theme-toggle, .settings-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition);
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+  }
+  .theme-toggle:hover, .settings-btn:hover {
+    transform: scale(1.05);
+  }
+  .theme-toggle i, .settings-btn i {
+    font-size: 1rem;
+    transition: var(--transition);
+  }
+  .theme-toggle .fa-sun {
+    color: #f9a825;
+  }
+  .theme-toggle .fa-moon {
+    color: #5c6bc0;
+  }
+  .theme-toggle .active {
+    background: var(--gradient-primary);
+    color: white;
+    transform: scale(1.1);
+  }
+  .settings-btn i {
+    color: var(--primary);
+  }
+  .settings-btn:hover i {
+    color: white;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  .logo i {
+    font-size: 3rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+  }
+  .tagline {
+    color: var(--text-light);
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
+  .conversation-starters {
+    margin: 25px 0;
+    padding: 25px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xl);
+    transition: var(--transition);
+    border: 1px solid var(--border);
+  }
+  .conversation-starters:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  }
+  .conversation-starters h3 {
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    text-align: center;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .conversation-starters h3 i {
+    color: var(--secondary);
+  }
+  .starter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+  }
+  .starter-button {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+  .starter-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: var(--transition);
+    z-index: -1;
+    border-radius: 50px;
+  }
+  .starter-button:hover {
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+  .starter-button:hover::before {
+    width: 100%;
+  }
+  .starter-button i {
+    font-size: 1rem;
+    color: var(--secondary);
+    transition: var(--transition);
+  }
+  .starter-button:hover i {
+    color: white;
+  }
+  .chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    transition: var(--transition);
+    margin-bottom: 30px;
+    border: 1px solid var(--border);
+  }
+  .chat-header {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .chat-header::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .chat-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.5px;
+    position: relative;
+    z-index: 1;
+  }
+  .chat-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--success);
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 10px var(--success);
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .chat-messages {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+    height: 500px;
+    scroll-behavior: smooth;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(79, 172, 254, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 50%, rgba(247, 37, 133, 0.03) 0%, transparent 50%);
+  }
+  /* Custom scrollbar */
+  .chat-messages::-webkit-scrollbar {
+    width: 10px;
+  }
+  .chat-messages::-webkit-scrollbar-track {
+    background: var(--message-bg);
+    border-radius: 10px;
+  }
+  .chat-messages::-webkit-scrollbar-thumb {
+    background: var(--scrollbar);
+    border-radius: 10px;
+  }
+  .chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-hover);
+  }
+  .message {
+    margin-bottom: 25px;
+    animation: slideUp 0.5s ease-out;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .user-message {
+    text-align: right;
+  }
+  .user-message .message-content {
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: 20px 20px 5px 20px;
+    padding: 16px 22px;
+    display: inline-block;
+    max-width: 80%;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+    word-wrap: break-word;
+  }
+  .bot-message .message-content {
+    background: var(--message-bg);
+    border-radius: 20px 20px 20px 5px;
+    padding: 16px 22px;
+    display: inline-block;
+    max-width: 90%;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    word-wrap: break-word;
+  }
+  .bot-message .model-name {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+  .bot-message .model-name i {
+    color: var(--secondary);
+  }
+  .summary-message {
+    margin-top: 30px;
+    border-left: 4px solid var(--secondary);
+    padding-left: 20px;
+    position: relative;
+  }
+  .summary-message::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: var(--gradient-secondary);
+    border-radius: 2px;
+  }
+  .summary-message .message-content {
+    background: linear-gradient(135deg, var(--message-bg), rgba(247, 37, 133, 0.05));
+    border-radius: 20px 20px 20px 5px;
+    padding: 18px 24px;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+  .summary-message .model-name {
+    color: var(--secondary-dark);
+    font-weight: 600;
+  }
+  .timestamp {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 8px;
+    text-align: right;
+  }
+  .copy-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: var(--transition);
+  }
+  .copy-button:hover {
+    opacity: 1;
+    background: var(--gradient-primary);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+  }
+  .copy-button.copied {
+    background: var(--success);
+    color: white;
+  }
+  .chat-input-container {
+    padding: 20px;
+    background: var(--message-bg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 15px;
+    transition: var(--transition);
+  }
+  .chat-input {
+    flex: 1;
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    padding: 15px 25px;
+    font-size: 1rem;
+    outline: none;
+    transition: var(--transition);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  }
+  .chat-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
+  }
+  .send-button {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .send-button::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+  .send-button:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-xl);
+  }
+  .send-button:active::before {
+    width: 300px;
+    height: 300px;
+  }
+  .send-button i {
+    font-size: 1.4rem;
+    position: relative;
+    z-index: 1;
+  }
+  /* iPhone-style typing animation */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 20px 25px;
+    color: var(--text-light);
+  }
+  .typing-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: 15px;
+  }
+  .typing-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    animation: typing 1.4s infinite;
+  }
+  .typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  @keyframes typing {
+    0%, 60%, 100% {
+      transform: translateY(0);
+      opacity: 0.7;
+    }
+    30% {
+      transform: translateY(-10px);
+      opacity: 1;
+    }
+  }
+  .error-message {
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    color: var(--error);
+    padding: 18px 24px;
+    border-radius: var(--radius);
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    animation: shake 0.5s;
+    box-shadow: var(--shadow-lg);
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  .error-message i {
+    color: var(--error);
+    font-size: 1.3rem;
+  }
+  .rate-limit-message {
+    background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+    color: var(--primary-dark);
+    padding: 22px 28px;
+    border-radius: var(--radius);
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: slideUp 0.5s ease-out;
+    box-shadow: var(--shadow-lg);
+  }
+  .rate-limit-message h3 {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .rate-limit-message p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  .rate-limit-message .reset-time {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 5px;
+  }
+  .welcome-message {
+    text-align: center;
+    padding: 50px 30px;
+    color: var(--text-light);
+    animation: fadeIn 1s ease-in-out;
+  }
+  .welcome-message i {
+    font-size: 4rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 25px;
+  }
+  .welcome-message h2 {
+    font-size: 2rem;
+    color: var(--text);
+    margin-bottom: 15px;
+    font-weight: 700;
+  }
+  .welcome-message p {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+  .footer {
+    margin-top: 20px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 1rem;
+    padding: 15px;
+  }
+  /* Modal styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s ease-in-out;
+    overflow-y: auto;
+  }
+  .modal-content {
+    background-color: var(--surface);
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 600px;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    animation: slideUp 0.3s ease-in-out;
+  }
+  .close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .close:hover {
+    color: var(--error);
+  }
+  .modal h2 {
+    margin-bottom: 20px;
+    color: var(--primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: var(--background);
+    color: var(--text);
+    transition: var(--transition);
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+  }
+  .radio-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .radio-option input[type="radio"] {
+    width: auto;
+    margin: 0;
+  }
+  .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  .checkbox-option input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+  }
+  .btn {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-block;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--border);
+    margin-left: 10px;
+  }
+  .btn-secondary:hover {
+    background: var(--button-hover);
+  }
+  /* Settings tabs */
+  .settings-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .settings-tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-light);
+    position: relative;
+    transition: var(--transition);
+  }
+  .settings-tab.active {
+    color: var(--primary);
+  }
+  .settings-tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 3px 3px 0 0;
+  }
+  .settings-tab:hover {
+    color: var(--primary);
+  }
+  .settings-tab-content {
+    display: none;
+  }
+  .settings-tab-content.active {
+    display: block;
+  }
+  /* Calculator styles */
+  .calculator {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 25px;
+    box-shadow: var(--shadow-xl);
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .calculator h3 {
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .calculator h3 i {
+    color: var(--secondary);
+  }
+  .calculator-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  .calculator-form .form-group {
+    margin-bottom: 0;
+  }
+  .calculator-result {
+    background: linear-gradient(135deg, var(--message-bg), rgba(67, 97, 238, 0.1));
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid var(--border);
+  }
+  .calculator-result h4 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  /* Format the answer content */
+  .formatted-content p {
+    margin-bottom: 15px;
+    line-height: 1.7;
+  }
+  .formatted-content ul {
+    margin-left: 25px;
+    margin-bottom: 15px;
+  }
+  .formatted-content li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  .formatted-content strong {
+    font-weight: 600;
+    color: var(--primary);
+  }
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .app-container {
+      padding: 15px;
+    }
+    
+    h1 {
+      font-size: 2.2rem;
+    }
+    
+    .chat-messages {
+      height: 400px;
+    }
+    
+    .user-message .message-content,
+    .bot-message .message-content {
+      max-width: 90%;
+    }
+    
+    .header-controls {
+      top: 15px;
+      right: 15px;
+    }
+    
+    .starter-button {
+      font-size: 0.9rem;
+      padding: 10px 16px;
+    }
+    
+    .conversation-starters {
+      padding: 20px;
+    }
+    
+    .chat-input-container {
+      padding: 15px;
+    }
+    
+    .send-button {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .chat-input {
+      padding: 12px 20px;
+    }
+    
+    .welcome-message {
+      padding: 40px 20px;
+    }
+    
+    .welcome-message h2 {
+      font-size: 1.8rem;
+    }
+    
+    .logo i {
+      font-size: 2.5rem;
+    }
+    
+    .calculator-form {
+      grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+      width: 95%;
+      padding: 20px;
+      margin: 10% auto;
+    }
+    
+    .settings-tabs {
+      flex-direction: column;
+    }
+    
+    .settings-tab {
+      padding: 10px 15px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .settings-tab.active::after {
+      display: none;
+    }
+    
+    .settings-tab.active {
+      background: rgba(67, 97, 238, 0.1);
+      border-radius: 10px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <header>
+    <div class="header-controls">
+      <div class="theme-toggle" id="themeToggle">
+        <i class="fas fa-sun active" id="lightIcon"></i>
+        <i class="fas fa-moon" id="darkIcon"></i>
+      </div>
+      <div class="settings-btn" id="settingsBtn" title="Settings">
+        <i class="fas fa-cog"></i>
+      </div>
+    </div>
+    
+    <div class="logo">
+      <i class="fas fa-chart-line"></i>
+      <h1>Financial Literacy Chatbot</h1>
+    </div>
+    <p class="tagline">Your personal assistant for finance, accounting, and money management questions</p>
+  </header>
+  <div class="conversation-starters">
+    <h3><i class="fas fa-lightbulb"></i> Try asking:</h3>
+    <div class="starter-buttons">
+      <button class="starter-button" data-question="What is VAT and how does it work?">
+        <i class="fas fa-question-circle"></i> What is VAT?
+      </button>
+      <button class="starter-button" data-question="How do I calculate loan interest?">
+        <i class="fas fa-calculator"></i> Calculate loan interest
+      </button>
+      <button class="starter-button" data-question="What's the difference between stocks and bonds?">
+        <i class="fas fa-chart-pie"></i> Stocks vs Bonds
+      </button>
+      <button class="starter-button" data-question="How do I create a personal budget?">
+        <i class="fas fa-wallet"></i> Create a budget
+      </button>
+      <button class="starter-button" data-question="What is compound interest?">
+        <i class="fas fa-percentage"></i> Compound interest
+      </button>
+    </div>
+  </div>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="chat-title">Ask a finance question</div>
+      <div class="chat-status">
+        <span class="status-indicator"></span>
+        <span>Online</span>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="welcome-message">
+        <i class="fas fa-comments-dollar"></i>
+        <h2>Welcome to Financial Literacy Chatbot</h2>
+        <p>Got money on your mind? Whether it's finance, banking or investing - I'm here to make it simple and maybe even fun. Ask me anything about money stuff! 💰</p>
+      </div>
+    </div>
+    <div class="chat-input-container">
+      <input type="text" class="chat-input" id="userInput" placeholder="Type your finance question here..." />
+      <button class="send-button" id="sendButton">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+  <div class="footer">
+    <p>Powered by <a href="https://openrouter.ai" target="_blank" style="color:var(--primary);">OpenRouter</a> | Using z-ai/glm-4.5-air:free and openai/gpt-oss-20b:free models</p>
+  </div>
+</div>
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeSettings">&times;</span>
+    <h2><i class="fas fa-cog"></i> Settings</h2>
+    
+    <div class="settings-tabs">
+      <div class="settings-tab active" data-tab="general">General</div>
+      <div class="settings-tab" data-tab="calculators">Calculators</div>
+    </div>
+    
+    <!-- General Settings Tab -->
+    <div class="settings-tab-content active" id="general-tab">
+      <div class="form-group">
+        <label for="apiKeyInput">OpenRouter API Key</label>
+        <input type="password" id="apiKeyInput" placeholder="Enter your API key">
+        <div class="checkbox-option">
+          <input type="checkbox" id="rememberApiKey">
+          <label for="rememberApiKey">Remember API key in browser</label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Model Selection</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" id="modelLite" name="model" value="Angelabi v1.7 Lite">
+            <label for="modelLite">Angelabi v1.7 Lite</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" id="modelHeavy" name="model" value="Angelabi v2.0 Heavy">
+            <label for="modelHeavy">Angelabi v2.0 Heavy</label>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <button class="btn" id="saveSettings">Save Settings</button>
+        <button class="btn btn-secondary" id="resetSettings">Reset to Default</button>
+      </div>
+    </div>
+    
+    <!-- Calculators Tab -->
+    <div class="settings-tab-content" id="calculators-tab">
+      <div class="calculator">
+        <h3><i class="fas fa-home"></i> Loan Calculator</h3>
+        <div class="calculator-form" id="loanForm">
+          <div class="form-group">
+            <label for="loanAmount">Loan Amount ($)</label>
+            <input type="number" id="loanAmount" placeholder="10000">
+          </div>
+          <div class="form-group">
+            <label for="loanRate">Interest Rate (%)</label>
+            <input type="number" id="loanRate" placeholder="5.5" step="0.1">
+          </div>
+          <div class="form-group">
+            <label for="loanTerm">Loan Term (years)</label>
+            <input type="number" id="loanTerm" placeholder="30">
+          </div>
+          <div class="form-group">
+            <button class="btn" id="calculateLoan">Calculate</button>
+          </div>
+        </div>
+        <div class="calculator-result" id="loanResult" style="display: none;">
+          <h4>Loan Calculation Results</h4>
+          <div class="result-item">
+            <span>Monthly Payment:</span>
+            <span id="monthlyPayment">$0.00</span>
+          </div>
+          <div class="result-item">
+            <span>Total Payment:</span>
+            <span id="totalPayment">$0.00</span>
+          </div>
+          <div class="result-item">
+            <span>Total Interest:</span>
+            <span id="totalInterest">$0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="calculator">
+        <h3><i class="fas fa-chart-line"></i> Investment Calculator</h3>
+        <div class="calculator-form" id="investmentForm">
+          <div class="form-group">
+            <label for="initialInvestment">Initial Investment ($)</label>
+            <input type="number" id="initialInvestment" placeholder="1000">
+          </div>
+          <div class="form-group">
+            <label for="monthlyContribution">Monthly Contribution ($)</label>
+            <input type="number" id="monthlyContribution" placeholder="100">
+          </div>
+          <div class="form-group">
+            <label for="investmentRate">Annual Return (%)</label>
+            <input type="number" id="investmentRate" placeholder="7" step="0.1">
+          </div>
+          <div class="form-group">
+            <label for="investmentTerm">Investment Period (years)</label>
+            <input type="number" id="investmentTerm" placeholder="10">
+          </div>
+          <div class="form-group">
+            <button class="btn" id="calculateInvestment">Calculate</button>
+          </div>
+        </div>
+        <div class="calculator-result" id="investmentResult" style="display: none;">
+          <h4>Investment Calculation Results</h4>
+          <div class="result-item">
+            <span>Final Value:</span>
+            <span id="finalValue">$0.00</span>
+          </div>
+          <div class="result-item">
+            <span>Total Contributions:</span>
+            <span id="totalContributions">$0.00</span>
+          </div>
+          <div class="result-item">
+            <span>Total Interest Earned:</span>
+            <span id="interestEarned">$0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // API configuration
+  let openRouterApiKey = "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";
+  
+  // Models configuration
+  const models = {
+    relevanceChecker: "openai/gpt-oss-20b:free",
+    answerModels: [
+      "openai/gpt-oss-20b:free",
+      "z-ai/glm-4.5-air:free"
+    ],
+    summarizer: "z-ai/glm-4.5-air:free"
+  };
+  
+  // User settings
+  let userSettings = {
+    apiKey: "",
+    selectedModel: "",
+    rememberApiKey: false
+  };
+  
+  // DOM elements
+  const chatMessages = document.getElementById("chatMessages");
+  const userInput = document.getElementById("userInput");
+  const sendButton = document.getElementById("sendButton");
+  const themeToggle = document.getElementById("themeToggle");
+  const lightIcon = document.getElementById("lightIcon");
+  const darkIcon = document.getElementById("darkIcon");
+  const starterButtons = document.querySelectorAll('.starter-button');
+  
+  // Settings modal elements
+  const settingsBtn = document.getElementById("settingsBtn");
+  const settingsModal = document.getElementById("settingsModal");
+  const closeSettings = document.getElementById("closeSettings");
+  const apiKeyInput = document.getElementById("apiKeyInput");
+  const rememberApiKey = document.getElementById("rememberApiKey");
+  const modelLite = document.getElementById("modelLite");
+  const modelHeavy = document.getElementById("modelHeavy");
+  const saveSettings = document.getElementById("saveSettings");
+  const resetSettings = document.getElementById("resetSettings");
+  
+  // Settings tabs
+  const settingsTabs = document.querySelectorAll('.settings-tab');
+  const settingsTabContents = document.querySelectorAll('.settings-tab-content');
+  
+  // Loan calculator elements
+  const calculateLoan = document.getElementById("calculateLoan");
+  const loanResult = document.getElementById("loanResult");
+  const monthlyPayment = document.getElementById("monthlyPayment");
+  const totalPayment = document.getElementById("totalPayment");
+  const totalInterest = document.getElementById("totalInterest");
+  
+  // Investment calculator elements
+  const calculateInvestment = document.getElementById("calculateInvestment");
+  const investmentResult = document.getElementById("investmentResult");
+  const finalValue = document.getElementById("finalValue");
+  const totalContributions = document.getElementById("totalContributions");
+  const interestEarned = document.getElementById("interestEarned");
+  
+  // Theme functionality
+  function initTheme() {
+    // Check for saved theme preference or default to light
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.body.setAttribute("data-theme", "dark");
+      lightIcon.classList.remove("active");
+      darkIcon.classList.add("active");
+    } else {
+      document.body.removeAttribute("data-theme");
+      lightIcon.classList.add("active");
+      darkIcon.classList.remove("active");
+    }
+  }
+  
+  // Theme toggle functionality
+  themeToggle.addEventListener("click", () => {
+    const isDarkMode = document.body.hasAttribute("data-theme");
+    
+    if (isDarkMode) {
+      // Switch to light mode
+      document.body.removeAttribute("data-theme");
+      lightIcon.classList.add("active");
+      darkIcon.classList.remove("active");
+      localStorage.setItem('theme', 'light');
+    } else {
+      // Switch to dark mode
+      document.body.setAttribute("data-theme", "dark");
+      lightIcon.classList.remove("active");
+      darkIcon.classList.add("active");
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+  
+  // Load user settings
+  function loadUserSettings() {
+    const savedSettings = localStorage.getItem('userSettings');
+    if (savedSettings) {
+      userSettings = JSON.parse(savedSettings);
+      
+      // Update UI with saved settings
+      if (userSettings.apiKey) {
+        apiKeyInput.value = userSettings.apiKey;
+        openRouterApiKey = userSettings.apiKey;
+      }
+      
+      if (userSettings.rememberApiKey) {
+        rememberApiKey.checked = true;
+      }
+      
+      if (userSettings.selectedModel) {
+        if (userSettings.selectedModel === "Angelabi v1.7 Lite") {
+          modelLite.checked = true;
+        } else if (userSettings.selectedModel === "Angelabi v2.0 Heavy") {
+          modelHeavy.checked = true;
+        }
+      }
+    }
+  }
+  
+  // Save user settings
+  function saveUserSettings() {
+    userSettings.apiKey = apiKeyInput.value.trim();
+    userSettings.rememberApiKey = rememberApiKey.checked;
+    
+    if (modelLite.checked) {
+      userSettings.selectedModel = "Angelabi v1.7 Lite";
+    } else if (modelHeavy.checked) {
+      userSettings.selectedModel = "Angelabi v2.0 Heavy";
+    }
+    
+    // Only save to localStorage if rememberApiKey is checked
+    if (userSettings.rememberApiKey) {
+      localStorage.setItem('userSettings', JSON.stringify(userSettings));
+    } else {
+      // If rememberApiKey is unchecked, remove from localStorage
+      localStorage.removeItem('userSettings');
+    }
+    
+    // Update API key if provided
+    if (userSettings.apiKey) {
+      openRouterApiKey = userSettings.apiKey;
+    }
+    
+    // Close modal
+    settingsModal.style.display = "none";
+    
+    // Show success message
+    showSuccessMessage("Settings saved successfully!");
+  }
+  
+  // Reset user settings
+  function resetUserSettings() {
+    apiKeyInput.value = "";
+    rememberApiKey.checked = false;
+    modelLite.checked = false;
+    modelHeavy.checked = false;
+    
+    userSettings = {
+      apiKey: "",
+      selectedModel: "",
+      rememberApiKey: false
+    };
+    
+    localStorage.removeItem('userSettings');
+    
+    // Reset API key to default
+    openRouterApiKey = "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";
+    
+    // Close modal
+    settingsModal.style.display = "none";
+    
+    // Show success message
+    showSuccessMessage("Settings reset to default!");
+  }
+  
+  // Show success message
+  function showSuccessMessage(message) {
+    const successDiv = document.createElement("div");
+    successDiv.style.backgroundColor = "var(--success)";
+    successDiv.style.color = "white";
+    successDiv.style.padding = "15px 20px";
+    successDiv.style.borderRadius = "10px";
+    successDiv.style.margin = "15px 0";
+    successDiv.style.display = "flex";
+    successDiv.style.alignItems = "center";
+    successDiv.style.gap = "10px";
+    successDiv.style.animation = "slideUp 0.5s ease-out";
+    successDiv.style.boxShadow = "var(--shadow-lg)";
+    
+    successDiv.innerHTML = `
+      <i class="fas fa-check-circle"></i>
+      <span>${message}</span>
+    `;
+    
+    chatMessages.appendChild(successDiv);
+    scrollToBottom();
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      if (chatMessages.contains(successDiv)) {
+        chatMessages.removeChild(successDiv);
+      }
+    }, 3000);
+  }
+  
+  // Settings modal event listeners
+  settingsBtn.addEventListener("click", () => {
+    settingsModal.style.display = "block";
+  });
+  
+  closeSettings.addEventListener("click", () => {
+    settingsModal.style.display = "none";
+  });
+  
+  saveSettings.addEventListener("click", saveUserSettings);
+  
+  resetSettings.addEventListener("click", resetUserSettings);
+  
+  // Settings tabs functionality
+  settingsTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      const tabId = tab.getAttribute("data-tab");
+      
+      // Deactivate all tabs and contents
+      settingsTabs.forEach(t => t.classList.remove("active"));
+      settingsTabContents.forEach(c => c.classList.remove("active"));
+      
+      // Activate selected tab and content
+      tab.classList.add("active");
+      document.getElementById(`${tabId}-tab`).classList.add("active");
+    });
+  });
+  
+  // Loan calculator
+  calculateLoan.addEventListener("click", () => {
+    const principal = parseFloat(document.getElementById("loanAmount").value) || 0;
+    const annualRate = parseFloat(document.getElementById("loanRate").value) || 0;
+    const years = parseFloat(document.getElementById("loanTerm").value) || 0;
+    
+    if (principal <= 0 || annualRate <= 0 || years <= 0) {
+      showSuccessMessage("Please enter valid values for all fields.");
+      return;
+    }
+    
+    const monthlyRate = annualRate / 100 / 12;
+    const numberOfPayments = years * 12;
+    
+    // Calculate monthly payment using the formula
+    const monthlyPaymentValue = principal * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+    
+    const totalPaymentValue = monthlyPaymentValue * numberOfPayments;
+    const totalInterestValue = totalPaymentValue - principal;
+    
+    // Display results
+    monthlyPayment.textContent = `$${monthlyPaymentValue.toFixed(2)}`;
+    totalPayment.textContent = `$${totalPaymentValue.toFixed(2)}`;
+    totalInterest.textContent = `$${totalInterestValue.toFixed(2)}`;
+    
+    loanResult.style.display = "block";
+  });
+  
+  // Investment calculator
+  calculateInvestment.addEventListener("click", () => {
+    const initial = parseFloat(document.getElementById("initialInvestment").value) || 0;
+    const monthly = parseFloat(document.getElementById("monthlyContribution").value) || 0;
+    const annualRate = parseFloat(document.getElementById("investmentRate").value) || 0;
+    const years = parseFloat(document.getElementById("investmentTerm").value) || 0;
+    
+    if (initial < 0 || monthly < 0 || annualRate <= 0 || years <= 0) {
+      showSuccessMessage("Please enter valid values for all fields.");
+      return;
+    }
+    
+    const monthlyRate = annualRate / 100 / 12;
+    const numberOfMonths = years * 12;
+    
+    // Calculate future value
+    let futureValue = initial * Math.pow(1 + monthlyRate, numberOfMonths);
+    
+    // Add monthly contributions
+    if (monthly > 0) {
+      futureValue += monthly * (Math.pow(1 + monthlyRate, numberOfMonths) - 1) / monthlyRate;
+    }
+    
+    const totalContributionsValue = initial + (monthly * numberOfMonths);
+    const interestEarnedValue = futureValue - totalContributionsValue;
+    
+    // Display results
+    finalValue.textContent = `$${futureValue.toFixed(2)}`;
+    totalContributions.textContent = `$${totalContributionsValue.toFixed(2)}`;
+    interestEarned.textContent = `$${interestEarnedValue.toFixed(2)}`;
+    
+    investmentResult.style.display = "block";
+  });
+  
+  // Close modal when clicking outside
+  window.addEventListener("click", (event) => {
+    if (event.target === settingsModal) {
+      settingsModal.style.display = "none";
+    }
+  });
+  
+  // Check if rate limit was previously reached
+  const rateLimitTime = localStorage.getItem('rateLimitTime');
+  if (rateLimitTime) {
+    const resetTime = new Date(parseInt(rateLimitTime));
+    const now = new Date();
+    
+    if (now < resetTime) {
+      // Only show rate limit message if user is not using their own API key
+      if (!userSettings.apiKey || userSettings.apiKey === "") {
+        // Show rate limit message if time hasn't passed
+        showRateLimitMessage(resetTime);
+      } else {
+        // Clear the saved time if user has their own API key
+        localStorage.removeItem('rateLimitTime');
+      }
+    } else {
+      // Clear the saved time if it has passed
+      localStorage.removeItem('rateLimitTime');
+    }
+  }
+  
+  // Initialize the chat
+  function initChat() {
+    sendButton.addEventListener("click", handleUserMessage);
+    userInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        handleUserMessage();
+      }
+    });
+    
+    // Add event listeners to conversation starter buttons
+    starterButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const question = button.getAttribute("data-question");
+        userInput.value = question;
+        handleUserMessage();
+      });
+    });
+  }
+  
+  // Handle user message
+  async function handleUserMessage() {
+    const question = userInput.value.trim();
+    if (!question) return;
+    
+    // Clear input
+    userInput.value = "";
+    
+    // Add user message to chat
+    addMessageToChat("user", question);
+    
+    // Show typing indicator
+    const typingIndicator = addTypingIndicator();
+    
+    try {
+      // First check if the question is finance-related
+      const isRelevant = await checkRelevance(question);
+      
+      if (!isRelevant) {
+        removeTypingIndicator(typingIndicator);
+        addErrorMessage("I can only answer questions related to finance, money, banking, investing, budgeting, and accounting. Please ask a finance-related question.");
+        return;
+      }
+      
+      // Get answers from both models (but don't display them individually)
+      const answers = await Promise.all(
+        models.answerModels.map(model => getAnswer(model, question))
+      );
+      
+      // Remove typing indicator
+      removeTypingIndicator(typingIndicator);
+      
+      // Show typing indicator for summary
+      const summaryTypingIndicator = addTypingIndicator();
+      
+      // Get summary
+      const summary = await getSummary(answers);
+      
+      // Remove typing indicator
+      removeTypingIndicator(summaryTypingIndicator);
+      
+      // Add only the summary to chat (with formatting)
+      addMessageToChat("bot", summary, models.summarizer, true);
+      
+    } catch (error) {
+      removeTypingIndicator(typingIndicator);
+      
+      // Handle rate limit error specifically
+      if (error.message.includes("Rate limit exceeded") || error.message.includes("429")) {
+        // Check if there's already a saved rate limit time
+        const savedRateLimitTime = localStorage.getItem('rateLimitTime');
+        
+        // Only show rate limit message if user is not using their own API key
+        if (!userSettings.apiKey || userSettings.apiKey === "") {
+          if (!savedRateLimitTime) {
+            // Only set a new rate limit time if one doesn't exist
+            const resetTime = new Date();
+            resetTime.setHours(resetTime.getHours() + 24);
+            
+            // Save reset time in localStorage
+            localStorage.setItem('rateLimitTime', resetTime.getTime().toString());
+            
+            // Show rate limit message
+            showRateLimitMessage(resetTime);
+          } else {
+            // Show existing rate limit message
+            const resetTime = new Date(parseInt(savedRateLimitTime));
+            showRateLimitMessage(resetTime);
+          }
+        }
+      } else {
+        addErrorMessage(`Error: ${error.message}`);
+      }
+    }
+  }
+  
+  // Check if the question is finance-related
+  async function checkRelevance(question) {
+    const prompt = `Determine if the following question is related to finance, money, banking, investing, budgeting, or accounting. Respond with only 'yes' or 'no'. Question: "${question}"`;
+    
+    const response = await callOpenRouter(models.relevanceChecker, prompt);
+    return response.toLowerCase().trim() === "yes";
+  }
+  
+  // Get answer from a model
+  async function getAnswer(model, question) {
+    const prompt = `You are a financial literacy assistant. Answer the following finance-related question in clear, conversational language that's easy for non-experts to understand: "${question}"`;
+    
+    return await callOpenRouter(model, prompt);
+  }
+  
+  // Get summary of answers
+  async function getSummary(answers) {
+    const combinedAnswers = answers.map((answer, index) => 
+      `Answer from ${models.answerModels[index]}: ${answer}`
+    ).join("\n\n");
+    
+    const prompt = `You are a financial literacy expert. Synthesize the following answers into a comprehensive, well-structured summary that addresses the user's question in detail. Combine the best insights from all answers, resolve any contradictions, and provide additional context where helpful. The summary should be thorough but still accessible to non-experts.
+Format your response using:
+- Paragraphs for general explanations
+- Bullet points (using "- ") for lists
+- **Bold text** for important terms and concepts
+${combinedAnswers}`;
+    
+    return await callOpenRouter(models.summarizer, prompt);
+  }
+  
+  // Call OpenRouter API
+  async function callOpenRouter(model, prompt) {
+    const url = "https://openrouter.ai/api/v1/chat/completions";
+    const headers = {
+      "Authorization": `Bearer ${openRouterApiKey}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://financial-literacy-chatbot.app",
+      "X-Title": "Financial Literacy Chatbot"
+    };
+    
+    const payload = {
+      model,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
+      max_tokens: 1000,
+      stream: false
+    };
+    
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      // Check if it's a rate limit error
+      if (response.status === 429) {
+        throw new Error("Rate limit exceeded");
+      }
+      throw new Error(`API Error: ${errorText}`);
+    }
+    
+    const data = await response.json();
+    return data.choices[0].message.content.trim();
+  }
+  
+  // Format markdown to HTML
+  function formatMarkdown(text) {
+    // Convert bold text: **text** to <strong>text</strong>
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Convert bullet points: - item to <ul><li>item</li></ul>
+    const lines = text.split('\n');
+    let inList = false;
+    let formattedLines = [];
+    
+    for (const line of lines) {
+      if (line.trim().startsWith('- ')) {
+        if (!inList) {
+          formattedLines.push('<ul>');
+          inList = true;
+        }
+        formattedLines.push(`<li>${line.trim().substring(2)}</li>`);
+      } else {
+        if (inList) {
+          formattedLines.push('</ul>');
+          inList = false;
+        }
+        if (line.trim()) {
+          formattedLines.push(`<p>${line.trim()}</p>`);
+        }
+      }
+    }
+    
+    if (inList) {
+      formattedLines.push('</ul>');
+    }
+    
+    return formattedLines.join('');
+  }
+  
+  // Get current time string
+  function getCurrentTime() {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  
+  // Format date for display
+  function formatDate(date) {
+    return date.toLocaleString([], {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  
+  // Add message to chat
+  function addMessageToChat(sender, content, modelName = "", isSummary = false) {
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", `${sender}-message`);
+    
+    if (isSummary) {
+      messageDiv.classList.add("summary-message");
+    }
+    
+    // Determine model name based on user selection or content length
+    let displayName = modelName;
+    if (sender === "bot" && isSummary) {
+      if (userSettings.selectedModel) {
+        displayName = userSettings.selectedModel;
+      } else {
+        displayName = content.length < 300 ? "Angelabi v1.7 Lite" : "Angelabi v2.0 Heavy";
+      }
+    }
+    
+    let modelInfo = "";
+    if (displayName) {
+      modelInfo = `<div class="model-name"><i class="fas fa-robot"></i> ${displayName}${isSummary ? " (Comprehensive Summary)" : ""}</div>`;
+    }
+    
+    let formattedContent = content;
+    if (isSummary) {
+      formattedContent = `<div class="formatted-content">${formatMarkdown(content)}</div>`;
+    }
+    
+    const currentTime = getCurrentTime();
+    
+    messageDiv.innerHTML = `
+      ${modelInfo}
+      <div class="message-content">
+        ${formattedContent}
+        ${isSummary ? '<button class="copy-button" title="Copy to clipboard"><i class="fas fa-copy"></i></button>' : ''}
+      </div>
+      <div class="timestamp">${currentTime}</div>
+    `;
+    
+    chatMessages.appendChild(messageDiv);
+    scrollToBottom();
+    
+    // Add copy functionality for summary messages
+    if (isSummary) {
+      const copyButton = messageDiv.querySelector('.copy-button');
+      const originalIcon = copyButton.innerHTML;
+      
+      copyButton.addEventListener('click', () => {
+        navigator.clipboard.writeText(content).then(() => {
+          copyButton.classList.add('copied');
+          copyButton.innerHTML = '<i class="fas fa-check"></i>';
+          
+          setTimeout(() => {
+            copyButton.classList.remove('copied');
+            copyButton.innerHTML = originalIcon;
+          }, 2000);
+        });
+      });
+    }
+  }
+  
+  // Add typing indicator
+  function addTypingIndicator() {
+    const typingDiv = document.createElement("div");
+    typingDiv.classList.add("typing-indicator");
+    typingDiv.innerHTML = `
+      <div class="typing-dots">
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      </div>
+      <span>AI is thinking...</span>
+    `;
+    
+    chatMessages.appendChild(typingDiv);
+    scrollToBottom();
+    
+    return typingDiv;
+  }
+  
+  // Remove typing indicator
+  function removeTypingIndicator(typingIndicator) {
+    if (typingIndicator) {
+      chatMessages.removeChild(typingIndicator);
+    }
+  }
+  
+  // Add error message
+  function addErrorMessage(message) {
+    const errorDiv = document.createElement("div");
+    errorDiv.classList.add("error-message");
+    errorDiv.innerHTML = `
+      <i class="fas fa-exclamation-circle"></i>
+      <span>${message}</span>
+    `;
+    
+    chatMessages.appendChild(errorDiv);
+    scrollToBottom();
+  }
+  
+  // Show rate limit message
+  function showRateLimitMessage(resetTime) {
+    // Remove any existing rate limit message
+    const existingMessage = chatMessages.querySelector('.rate-limit-message');
+    if (existingMessage) {
+      chatMessages.removeChild(existingMessage);
+    }
+    
+    const rateLimitDiv = document.createElement("div");
+    rateLimitDiv.classList.add("rate-limit-message");
+    
+    const formattedResetTime = formatDate(resetTime);
+    
+    rateLimitDiv.innerHTML = `
+      <h3><i class="fas fa-hourglass-half"></i> Daily Limit Reached</h3>
+      <p>You've reached the daily limit for free model requests.</p>
+      <p>Come back at <span class="reset-time">${formattedResetTime}</span></p>
+    `;
+    
+    chatMessages.appendChild(rateLimitDiv);
+    scrollToBottom();
+  }
+  
+  // Scroll to bottom of chat
+  function scrollToBottom() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+  
+  // Initialize everything when the page loads
+  document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    loadUserSettings();
+    initChat();
+  });
+</script>
+</body>
+</html>
