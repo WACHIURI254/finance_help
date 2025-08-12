@@ -615,6 +615,60 @@
     font-size: 1rem;
     padding: 15px;
   }
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 15px;
+  }
+  .social-icons a {
+    color: var(--text);
+    font-size: 1.5rem;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .social-icons a:hover {
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+  .social-icons .fa-facebook:hover {
+    background: #1877f2;
+  }
+  .social-icons .fa-twitter:hover {
+    background: #1da1f2;
+  }
+  .social-icons .fa-instagram:hover {
+    background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af, #515bd4);
+  }
+  .social-icons .fa-linkedin:hover {
+    background: #0077b5;
+  }
+  .social-icons .fa-youtube:hover {
+    background: #ff0000;
+  }
+  .social-icons .fa-github:hover {
+    background: #333;
+  }
+  .social-icons .fa-discord:hover {
+    background: #7289da;
+  }
+  .social-icons .fa-telegram:hover {
+    background: #0088cc;
+  }
+  .social-icons .fa-tiktok:hover {
+    background: #000;
+  }
+  .social-icons .fa-pinterest:hover {
+    background: #e60023;
+  }
   /* Modal styles */
   .modal {
     display: none;
@@ -928,6 +982,16 @@
       background: rgba(67, 97, 238, 0.1);
       border-radius: 10px;
     }
+    
+    .social-icons {
+      gap: 15px;
+    }
+    
+    .social-icons a {
+      width: 35px;
+      height: 35px;
+      font-size: 1.2rem;
+    }
   }
 </style>
 </head>
@@ -993,7 +1057,19 @@
     </div>
   </div>
   <div class="footer">
-    <p>Powered by <a href="https://openrouter.ai" target="_blank" style="color:var(--primary);">OpenRouter</a> | Using z-ai/glm-4.5-air:free and openai/gpt-oss-20b:free models</p>
+    <div class="social-icons">
+      <a href="#" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="#" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+      <a href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="#" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+      <a href="#" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+      <a href="#" target="_blank" title="Discord"><i class="fab fa-discord"></i></a>
+      <a href="#" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
+      <a href="#" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+      <a href="#" target="_blank" title="Pinterest"><i class="fab fa-pinterest"></i></a>
+    </div>
+    <p>&copy; 2023 Financial Literacy Chatbot. All rights reserved.</p>
   </div>
 </div>
 <!-- Settings Modal -->
